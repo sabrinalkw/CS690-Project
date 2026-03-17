@@ -60,7 +60,13 @@ public class ConsoleUI
 
                     command = AskForInput("Enter submit"); 
                 } while (command != "submit");   
-            }
+            } 
+            //else if (user == "new user")
+              //  {   var newUserName = AnsiConsole.Prompt(
+                //    new TextPrompt<string>("Pleaser enter new users name:"));
+                  //  dataManager.Users.Add(new User (newUserName));
+                    //dataManager.SynchronizeUsers();
+                //}
         }
         public static string AskForInput(string message){
             Console.Write(message);

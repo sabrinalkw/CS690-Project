@@ -17,16 +17,18 @@ public class DataManager
             Categories.Add(new Category("3"));
 
             Labels = new List<Label>();
-            Labels.Add(new Label("treats"));
-            Labels.Add(new Label("kibble"));
-            Labels.Add(new Label("vaccines"));
-            Labels.Add(new Label("check up"));
+            var labelsFileContent = File.ReadAllLines("labels.txt");
+
+            foreach(var labelName in labelsFileContent){
+                Labels.Add(new Label(labelName));
+        }
 
             // add different Labels to different Categories 
             Categories[0].Labels.Add(Labels[0]);
             Categories[0].Labels.Add(Labels[1]);
             Categories[1].Labels.Add(Labels[2]);
             Categories[1].Labels.Add(Labels[3]);
+            Categories[1].Labels.Add(Labels[4]);
 
             Users = new List<User>();
             Users.Add(new User("Jane"));
@@ -38,5 +40,14 @@ public class DataManager
     {
         this.TaskData.Add(data);
         this.fileSaver.AppendData(data);
+    }
+
+    public void SynchronizeLabels()
+    {
+        File.Delete("labels.txt");
+        foreach(var label in Labels)
+        {
+            File.AppendAllText("labels.txt", label.Name+Environment.NewLine);
+        }
     }
 }
