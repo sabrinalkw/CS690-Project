@@ -13,4 +13,8 @@ public class FileSaver
     {
         File.AppendAllText(this.fileName, line + Environment.NewLine);
     }
+    public void AppendData(TaskData data)
+    {
+        File.AppendAllText(this.fileName, data.User + ":" + data.Category + ":" + data.Label + data.DueDate + data.Status + Environment.NewLine);
+    }
 }
