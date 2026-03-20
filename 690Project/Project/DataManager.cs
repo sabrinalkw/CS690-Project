@@ -90,4 +90,14 @@ public class DataManager
         }
     }
 
+
+public void SaveAllTasks()
+{
+    File.Delete("task-data.txt");
+
+    foreach (var task in TaskData)
+    {
+        fileSaver.AppendData(task);
+    }
+}
 }

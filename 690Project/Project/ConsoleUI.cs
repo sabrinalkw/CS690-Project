@@ -19,6 +19,7 @@ public class ConsoleUI
         new SelectionPrompt<string>()
             .Title("Please select mode new user or current user: ")
             .AddChoices("new user", "current user"));
+        
 
     if (user == "current user")
     {
@@ -49,8 +50,14 @@ public class ConsoleUI
 
                 if(viewEdit == "edit tasks") 
                 {
-                 
-                var selectedCategory = AnsiConsole.Prompt(
+                var updateEdit = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Mark previously entered task as complete or add new task ")
+                    .AddChoices("update previously entered task", "add new task"));
+
+                if (updateEdit == "add new task")
+                        {
+                            var selectedCategory = AnsiConsole.Prompt(
                     new SelectionPrompt<Category>()
                         .Title("Please select task category: ")
                         .AddChoices(dataManager.Categories));
@@ -70,6 +77,21 @@ public class ConsoleUI
 
                 command = AskForInput("Enter submit");
                 } 
+        
+                else if (updateEdit == "update previously entered task")
+                    {
+                    var incompleteTasks = Reporter.ShowTasksUpcoming(dataManager.TaskData).ToList();
+                              
+                    var selectedUpdate = AnsiConsole.Prompt(
+                    new SelectionPrompt<TaskData>()
+                        .Title("Please select task to mark as complete ")
+                        .AddChoices(incompleteTasks));
+
+                       selectedUpdate.Status.Complete = true;
+                       dataManager.SaveAllTasks();
+                    }
+                }
+                
 
                 if(viewEdit == "view tasks")
                     {
@@ -77,8 +99,9 @@ public class ConsoleUI
                       Console.WriteLine("Your completed tasks are:");
                       foreach (var task in result)
 {
-    Console.WriteLine($"- {task.Label} | {task.Category} | Due: {task.DueDate} | User: {task.User}");
+    Console.WriteLine($"- User: {task.User} | {task.Category} |  {task.Label} | Due: {task.DueDate}");
 }
+command = AskForInput("Enter submit");
                     }
             }
             else if (selectedStatus == "upcoming")
@@ -119,9 +142,10 @@ public class ConsoleUI
                       var result = Reporter.ShowTasksUpcoming(dataManager.TaskData);
                       Console.WriteLine("Your upcoming tasks are:");
                       foreach (var task in result)
-{
-    Console.WriteLine($"- {task.Label} | {task.Category} | Due: {task.DueDate} | User: {task.User}");
-}
+            {
+                Console.WriteLine($"- User: {task.User} | {task.Category} |  {task.Label} | Due: {task.DueDate}");
+            }
+                command = AskForInput("Enter submit");
                     } 
 
             }

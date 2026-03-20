@@ -46,7 +46,7 @@ public class Category
     }
 }
 
-
+ 
 
 public class Status
 {
@@ -66,6 +66,7 @@ public class TaskData
     public DateTime DueDate { get; }
     public User User { get; }
     public Category Category { get; }
+
     public Label Label { get; }
     public Status Status { get; }
     public TaskData(DateTime dueDate, User user, Category category, Label label, Status status) {
@@ -75,5 +76,12 @@ public class TaskData
         this.Label = label; 
         this.Status = status;
     }
+    public override string ToString()
+    {
+        return $"{User.Name} | {Category.Name} | {Label.Name} | Due: {DueDate:g} | {(Status.Complete ? "✔" : "✘")}";
+    }
 }
+
+
+
 
