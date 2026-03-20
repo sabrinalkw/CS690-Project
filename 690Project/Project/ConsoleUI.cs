@@ -1,5 +1,6 @@
 using System.Data;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using Microsoft.VisualBasic;
 using Spectre.Console;
 
@@ -13,7 +14,7 @@ public class ConsoleUI
             dataManager = new DataManager();
         }
         public void Show()
-{   
+    {   
     var user = AnsiConsole.Prompt(
         new SelectionPrompt<string>()
             .Title("Please select mode new user or current user: ")
@@ -32,19 +33,22 @@ public class ConsoleUI
 
             Console.WriteLine("Current user is: " + selectedUser.Name);
 
-            var selectedInput = AnsiConsole.Prompt(
+            var selectedStatus = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("Please select upcoming tasks or current tasks:")
                     .AddChoices("upcoming", "completed"));
 
-            Status selectedStatus = new Status(selectedInput == "completed");
-            
-            if (selectedInput == "completed")
+            Status taskStatus = new Status(selectedStatus == "completed");
+
+            if (selectedStatus == "completed")
             {
                 var viewEdit = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("Please select: view tasks or edit tasks:")
                         .AddChoices("view tasks", "edit tasks"));
+
+                if(viewEdit == "edit tasks") 
+                {
                  
                 var selectedCategory = AnsiConsole.Prompt(
                     new SelectionPrompt<Category>()
@@ -60,19 +64,34 @@ public class ConsoleUI
                     new TextPrompt<DateTime>("Please enter upcoming task due date and time:"));
 
                 TaskData data = new TaskData(
-                    dueDate, selectedUser, selectedCategory, selectedLabel, selectedStatus);
+                    dueDate, selectedUser, selectedCategory, selectedLabel, taskStatus);
         
                 dataManager.AddNewTaskData(data);
 
-                command = AskForInput("Enter submit"); 
-            } 
-            else if (selectedInput == "upcoming")
+                command = AskForInput("Enter submit");
+                } 
+
+                if(viewEdit == "view tasks")
+                    {
+                    var result = Reporter.ShowTasksCompleted(dataManager.TaskData);
+                      Console.WriteLine("Your completed tasks are:");
+                      foreach (var task in result)
+{
+    Console.WriteLine($"- {task.Label} | {task.Category} | Due: {task.DueDate} | User: {task.User}");
+}
+                    }
+            }
+            else if (selectedStatus == "upcoming")
             {
+
                 var viewEdit = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("Please select: view tasks or edit tasks:")
                         .AddChoices("view tasks", "edit tasks"));
-                 
+                
+                if(viewEdit == "edit tasks") 
+                {
+
                 var selectedCategory = AnsiConsole.Prompt(
                     new SelectionPrompt<Category>()
                         .Title("Please select task category: ")
@@ -86,20 +105,32 @@ public class ConsoleUI
                 var dueDate = AnsiConsole.Prompt(
                     new TextPrompt<DateTime>("Please enter upcoming task due date and time:"));
 
+
                 TaskData data = new TaskData(
-                    dueDate, selectedUser, selectedCategory, selectedLabel, selectedStatus);
+                    dueDate, selectedUser, selectedCategory, selectedLabel, taskStatus);
         
                 dataManager.AddNewTaskData(data);
 
                 command = AskForInput("Enter submit");
             }
+    
+            if(viewEdit == "view tasks")
+                    {
+                      var result = Reporter.ShowTasksUpcoming(dataManager.TaskData);
+                      Console.WriteLine("Your upcoming tasks are:");
+                      foreach (var task in result)
+{
+    Console.WriteLine($"- {task.Label} | {task.Category} | Due: {task.DueDate} | User: {task.User}");
+}
+                    } 
 
-                } while (command != "submit");
             }
+                } while (command != "submit");
         }
+    }
         public static string AskForInput(string message){
             Console.Write(message);
-            return Console.ReadLine();
+            return Console.ReadLine() ?? "";
         }
         
     }

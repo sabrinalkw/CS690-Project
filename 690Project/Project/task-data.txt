@@ -1,5 +1,2 @@
-John:Vet:check up12/12/2012 12:00:00complete
-John:Vet:check up01/01/2001 01:00:00complete
-John:Vet:vet food12/12/2012 01:00:00complete
-Jane:Food:treats:12/12/2012 12:12:00:incomplete
-John:Food:treats:12/12/2012 12:12:00:complete
+Jane-Vet-treats-01/01/2001 01:00:00-incomplete
+John-Food-check up-02/02/2002 02:00:00-complete

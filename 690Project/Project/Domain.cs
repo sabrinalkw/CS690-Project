@@ -54,7 +54,9 @@ public class Status
     public Status(bool complete) {
         this.Complete = complete;
     }
-    public override string ToString(){
+public bool Incomplete => !Complete;
+ public override string ToString()
+    {
         return Complete ? "complete" : "incomplete";
     }
 }
