@@ -1,99 +1,160 @@
+using System.Data;
 using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 using Microsoft.VisualBasic;
 using Spectre.Console;
 
 namespace Project;
 public class ConsoleUI
-    {
-        FileSaver fileSaver;
-
-        List<Category> categories; 
-        List<Label> labels; 
-
-        List<User> users; 
-
+    { 
+        DataManager dataManager;
         public ConsoleUI()
         {
-            fileSaver = new FileSaver("task-data.txt");
-
-            categories = new List<Category>(); 
-            categories.Add(new Category("Food"));
-            categories.Add(new Category("Vet"));
-            categories.Add(new Category("3"));
-
-            labels = new List<Label>();
-            labels.Add(new Label("treats"));
-            labels.Add(new Label("kibble"));
-            labels.Add(new Label("vaccines"));
-            labels.Add(new Label("check up"));
-
-            // add different labels to different categories 
-            categories[0].Labels.Add(labels[0]);
-            categories[0].Labels.Add(labels[1]);
-            categories[1].Labels.Add(labels[2]);
-            categories[1].Labels.Add(labels[3]);
-
-            users = new List<User>();
-            users.Add(new User("Jane"));
-            users.Add(new User("John"));
+            
+            dataManager = new DataManager();
         }
-        public void Show(){   
-            var user = AnsiConsole.Prompt(
+        public void Show()
+    {   
+    var user = AnsiConsole.Prompt(
+        new SelectionPrompt<string>()
+            .Title("Please select mode new user or current user: ")
+            .AddChoices("new user", "current user"));
+        
+
+    if (user == "current user")
+    {
+        string command = ""; 
+
+        do
+        {
+            var selectedUser = AnsiConsole.Prompt(
+                new SelectionPrompt<User>()
+                    .Title("Pleaser select a user:")
+                    .AddChoices(dataManager.Users));
+
+            Console.WriteLine("Current user is: " + selectedUser.Name);
+
+            var selectedStatus = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("Please select mode new user or current user: ")
-                    .AddChoices("new user", "current user"));
+                    .Title("Please select upcoming tasks or current tasks:")
+                    .AddChoices("upcoming", "completed"));
 
-            if(user == "current user"){
+            Status taskStatus = new Status(selectedStatus == "completed");
 
-             string command = ""; 
-
-                do {
-                    var selectedUser = AnsiConsole.Prompt(
-                    new SelectionPrompt<User>()
-                        .Title("Pleaser select a user:")
-                        .AddChoices(users));
-                    Console.WriteLine("Current user is: " + selectedUser.Name);
-
-                    var selectedInput = AnsiConsole.Prompt(
+            if (selectedStatus == "completed")
+            {
+                var viewEdit = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
-                        .Title("Please select upcoming tasks or current tasks:")
-                        .AddChoices("incomplete", "complete"));
-                    Status selectedStatus = new Status(selectedInput == "complete");
+                        .Title("Please select: view tasks or edit tasks:")
+                        .AddChoices("view tasks", "edit tasks"));
 
+                if(viewEdit == "edit tasks") 
+                {
+                var updateEdit = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Mark previously entered task as complete or add new task ")
+                    .AddChoices("update previously entered task", "add new task"));
 
-                    var viewEdit = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Please select: view tasks or edit tasks:")
-                            .AddChoices("view tasks", "edit tasks"));
-                     
-                    var selectedCategory = AnsiConsole.Prompt(
-                        new SelectionPrompt<Category>()
+                if (updateEdit == "add new task")
+                        {
+                            var selectedCategory = AnsiConsole.Prompt(
+                    new SelectionPrompt<Category>()
                         .Title("Please select task category: ")
-                        .AddChoices(categories));
+                        .AddChoices(dataManager.Categories));
 
-                    var selectedLabel = AnsiConsole.Prompt(
-                        new SelectionPrompt<Label>()
+                var selectedLabel = AnsiConsole.Prompt(
+                    new SelectionPrompt<Label>()
                         .Title("Please select task label: ")
                         .AddChoices(selectedCategory.Labels));
-                    
-                    string selectedDate = AskForInput("Please enter upcoming task due date and time:");
-                    DateTime dueDate;
-                    while (!DateTime.TryParse(selectedDate, out dueDate))
-                        {
-                            selectedDate = AskForInput("Invalid format. Please enter a valid date and time (e.g., 2026-03-17 14:30):");
-                        }
 
-                    TaskData data = new TaskData(dueDate, selectedUser, selectedCategory, selectedLabel, selectedStatus);
-            
-                    fileSaver.AppendData(data);
+                var dueDate = AnsiConsole.Prompt(
+                    new TextPrompt<DateTime>("Please enter upcoming task due date and time (in m/d/y hr:min format):"));
 
-                    command = AskForInput("Enter submit"); 
-                } while (command != "submit");   
+                TaskData data = new TaskData(
+                    dueDate, selectedUser, selectedCategory, selectedLabel, taskStatus);
+        
+                dataManager.AddNewTaskData(data);
+
+                command = AskForInput("Enter submit: ");
+                } 
+        
+                else if (updateEdit == "update previously entered task")
+                    {
+                    var incompleteTasks = Reporter.ShowTasksUpcoming(dataManager.TaskData).ToList();
+                              
+                    var selectedUpdate = AnsiConsole.Prompt(
+                    new SelectionPrompt<TaskData>()
+                        .Title("Please select task to mark as complete ")
+                        .AddChoices(incompleteTasks));
+
+                       selectedUpdate.Status.Complete = true;
+                       dataManager.SaveAllTasks();
+                    }
+                }
+                
+
+                if(viewEdit == "view tasks")
+                    {
+                    var result = Reporter.ShowTasksCompleted(dataManager.TaskData);
+                      Console.WriteLine("Your completed tasks are:");
+                      foreach (var task in result)
+{
+    Console.WriteLine($"- User: {task.User} | {task.Category} |  {task.Label} | Due: {task.DueDate}");
+}
+command = AskForInput("Enter submit: ");
+                    }
             }
+            else if (selectedStatus == "upcoming")
+            {
+
+                var viewEdit = AnsiConsole.Prompt(
+                    new SelectionPrompt<string>()
+                        .Title("Please select: view tasks or edit tasks:")
+                        .AddChoices("view tasks", "edit tasks"));
+                
+                if(viewEdit == "edit tasks") 
+                {
+
+                var selectedCategory = AnsiConsole.Prompt(
+                    new SelectionPrompt<Category>()
+                        .Title("Please select task category: ")
+                        .AddChoices(dataManager.Categories));
+
+                var selectedLabel = AnsiConsole.Prompt(
+                    new SelectionPrompt<Label>()
+                        .Title("Please select task label: ")
+                        .AddChoices(selectedCategory.Labels));
+
+                var dueDate = AnsiConsole.Prompt(
+                    new TextPrompt<DateTime>("Please enter upcoming task due date and time (in m/d/y hr:min format):"));
+
+
+                TaskData data = new TaskData(
+                    dueDate, selectedUser, selectedCategory, selectedLabel, taskStatus);
+        
+                dataManager.AddNewTaskData(data);
+
+                command = AskForInput("Enter submit: ");
+            }
+    
+            if(viewEdit == "view tasks")
+                    {
+                      var result = Reporter.ShowTasksUpcoming(dataManager.TaskData);
+                      Console.WriteLine("Your upcoming tasks are:");
+                      foreach (var task in result)
+            {
+                Console.WriteLine($"- User: {task.User} | {task.Category} |  {task.Label} | Due: {task.DueDate}");
+            }
+                command = AskForInput("Enter submit: ");
+                    } 
+
+            }
+                } while (command != "submit");
         }
+    }
         public static string AskForInput(string message){
             Console.Write(message);
-            return Console.ReadLine();
+            return Console.ReadLine() ?? "";
         }
         
     }
