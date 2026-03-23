@@ -68,14 +68,14 @@ public class ConsoleUI
                         .AddChoices(selectedCategory.Labels));
 
                 var dueDate = AnsiConsole.Prompt(
-                    new TextPrompt<DateTime>("Please enter upcoming task due date and time:"));
+                    new TextPrompt<DateTime>("Please enter upcoming task due date and time (in m/d/y hr:min format):"));
 
                 TaskData data = new TaskData(
                     dueDate, selectedUser, selectedCategory, selectedLabel, taskStatus);
         
                 dataManager.AddNewTaskData(data);
 
-                command = AskForInput("Enter submit");
+                command = AskForInput("Enter submit: ");
                 } 
         
                 else if (updateEdit == "update previously entered task")
@@ -101,7 +101,7 @@ public class ConsoleUI
 {
     Console.WriteLine($"- User: {task.User} | {task.Category} |  {task.Label} | Due: {task.DueDate}");
 }
-command = AskForInput("Enter submit");
+command = AskForInput("Enter submit: ");
                     }
             }
             else if (selectedStatus == "upcoming")
@@ -126,7 +126,7 @@ command = AskForInput("Enter submit");
                         .AddChoices(selectedCategory.Labels));
 
                 var dueDate = AnsiConsole.Prompt(
-                    new TextPrompt<DateTime>("Please enter upcoming task due date and time:"));
+                    new TextPrompt<DateTime>("Please enter upcoming task due date and time (in m/d/y hr:min format):"));
 
 
                 TaskData data = new TaskData(
@@ -134,7 +134,7 @@ command = AskForInput("Enter submit");
         
                 dataManager.AddNewTaskData(data);
 
-                command = AskForInput("Enter submit");
+                command = AskForInput("Enter submit: ");
             }
     
             if(viewEdit == "view tasks")
@@ -145,7 +145,7 @@ command = AskForInput("Enter submit");
             {
                 Console.WriteLine($"- User: {task.User} | {task.Category} |  {task.Label} | Due: {task.DueDate}");
             }
-                command = AskForInput("Enter submit");
+                command = AskForInput("Enter submit: ");
                     } 
 
             }

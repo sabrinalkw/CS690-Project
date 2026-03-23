@@ -78,7 +78,7 @@ public class TaskData
     }
     public override string ToString()
     {
-        return $"{User.Name} | {Category.Name} | {Label.Name} | Due: {DueDate:g} | {(Status.Complete ? "✔" : "✘")}";
+        return $"{User.Name} | {Category.Name} | {Label.Name} | Due: {DueDate:g} | {Status}";
     }
 }
 

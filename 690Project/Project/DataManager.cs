@@ -32,11 +32,12 @@ public class DataManager
             Categories[0].Labels.Add(Labels[1]);
             Categories[1].Labels.Add(Labels[2]);
             Categories[1].Labels.Add(Labels[3]);
-            Categories[1].Labels.Add(Labels[4]);
+            Categories[2].Labels.Add(Labels[4]);
+            Categories[2].Labels.Add(Labels[5]);
 
             Users = new List<User>();
             Users.Add(new User("Jane"));
-            Users.Add(new User("John"));
+            Users.Add(new User("Ben"));
 
             TaskData = new List<TaskData>();
 
