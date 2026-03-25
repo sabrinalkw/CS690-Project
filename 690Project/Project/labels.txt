@@ -1,6 +1,8 @@
-Heartworm Medication
-Flea Medication
-Treats
-Kibble
-Vaccines
-Vet appointements 
+Heartworm Medication|Medications
+Flea Medication|Medications
+Treats|Food/treats
+Kibble|Food/treats
+Vaccines|Vet
+Vet appointements|Vet
+tests|Vet
+testing|test
