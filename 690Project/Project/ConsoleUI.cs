@@ -11,7 +11,7 @@ namespace Project;
 public class ConsoleUI
 {
     DataManager dataManager;
-    DataModifyer dataModifyer; 
+    DataModifyer dataModifyer;
 
     public ConsoleUI()
     {
@@ -33,11 +33,7 @@ public class ConsoleUI
 
             do
             {
-                var selectedUser = AnsiConsole.Prompt(
-                    new SelectionPrompt<User>()
-                        .Title("Pleaser select a user:")
-                        .AddChoices(dataManager.Users)
-                );
+                var selectedUser = SelectFromList("Please select a user:", dataManager.Users);
 
                 Console.WriteLine("Current user is: " + selectedUser.Name);
 
@@ -80,16 +76,13 @@ public class ConsoleUI
 
                             if (listUpdate == "choose from existing list")
                             {
-                                var selectedCategory = AnsiConsole.Prompt(
-                                    new SelectionPrompt<Category>()
-                                        .Title("Please select task category: ")
-                                        .AddChoices(dataManager.Categories)
+                                var selectedCategory = SelectFromList(
+                                    "Please select task category: ",
+                                    dataManager.Categories
                                 );
-
-                                var selectedLabel = AnsiConsole.Prompt(
-                                    new SelectionPrompt<Label>()
-                                        .Title("Please select task label: ")
-                                        .AddChoices(selectedCategory.Labels)
+                                var selectedLabel = SelectFromList(
+                                    "Please select task label: ",
+                                    selectedCategory.Labels
                                 );
 
                                 var dueDate = AnsiConsole.Prompt(
@@ -138,16 +131,18 @@ public class ConsoleUI
                                 }
                                 else if (txtUpdate == "add new task for existing category")
                                 {
-                                    var selectedCategory = AnsiConsole.Prompt(
-                                        new SelectionPrompt<Category>()
-                                            .Title("Please select task category: ")
-                                            .AddChoices(dataManager.Categories)
+                                    var selectedCategory = SelectFromList(
+                                        "Please select task category: ",
+                                        dataManager.Categories
                                     );
 
                                     var newLabelName = AnsiConsole.Prompt(
                                         new TextPrompt<string>("Enter new task for this category:")
                                     );
-                                    dataModifyer.AddLabel(new Label(newLabelName), selectedCategory);
+                                    dataModifyer.AddLabel(
+                                        new Label(newLabelName),
+                                        selectedCategory
+                                    );
                                 }
                             }
                         }
@@ -157,10 +152,9 @@ public class ConsoleUI
                                 .ShowTasksUpcoming(dataManager.TaskData)
                                 .ToList();
 
-                            var selectedUpdate = AnsiConsole.Prompt(
-                                new SelectionPrompt<TaskData>()
-                                    .Title("Please select task to mark as complete ")
-                                    .AddChoices(incompleteTasks)
+                            var selectedUpdate = SelectFromList(
+                                "Please select task to mark as complete ",
+                                incompleteTasks
                             );
 
                             selectedUpdate.Status.Complete = true;
@@ -195,16 +189,15 @@ public class ConsoleUI
                                 .Title("Mark previously entered task as complete or add new task ")
                                 .AddChoices("update previously entered task", "add new task")
                         );
-                        var selectedCategory = AnsiConsole.Prompt(
-                            new SelectionPrompt<Category>()
-                                .Title("Please select task category: ")
-                                .AddChoices(dataManager.Categories)
+
+                        var selectedCategory = SelectFromList(
+                            "Please select task category: ",
+                            dataManager.Categories
                         );
 
-                        var selectedLabel = AnsiConsole.Prompt(
-                            new SelectionPrompt<Label>()
-                                .Title("Please select task label: ")
-                                .AddChoices(selectedCategory.Labels)
+                        var selectedLabel = SelectFromList(
+                            "Please select task label: ",
+                            selectedCategory.Labels
                         );
 
                         var dueDate = AnsiConsole.Prompt(
@@ -252,5 +245,10 @@ public class ConsoleUI
     {
         Console.Write(message);
         return Console.ReadLine() ?? "";
+    }
+
+    public static T SelectFromList<T>(string title, IEnumerable<T> items) // refactor to pick from list
+    {
+        return AnsiConsole.Prompt(new SelectionPrompt<T>().Title(title).AddChoices(items));
     }
 }
