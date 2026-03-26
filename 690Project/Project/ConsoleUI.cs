@@ -11,10 +11,12 @@ namespace Project;
 public class ConsoleUI
 {
     DataManager dataManager;
+    DataModifyer dataModifyer; 
 
     public ConsoleUI()
     {
         dataManager = new DataManager();
+        dataModifyer = new DataModifyer((dataManager));
     }
 
     public void Show()
@@ -104,7 +106,7 @@ public class ConsoleUI
                                     taskStatus
                                 );
 
-                                dataManager.AddNewTaskData(data);
+                                dataModifyer.AddNewTaskData(data);
 
                                 command = AskForInput("Enter submit: ");
                             }
@@ -126,13 +128,13 @@ public class ConsoleUI
                                     var newCategoryName = AnsiConsole.Prompt(
                                         new TextPrompt<string>("Enter new category name:")
                                     );
-                                    dataManager.AddCategory(new Category(newCategoryName));
+                                    dataModifyer.AddCategory(new Category(newCategoryName));
 
                                     var newLabelName = AnsiConsole.Prompt(
                                         new TextPrompt<string>("Enter new task for this category:")
                                     );
                                     var addedCategory = dataManager.Categories.Last();
-                                    dataManager.AddLabel(new Label(newLabelName), addedCategory);
+                                    dataModifyer.AddLabel(new Label(newLabelName), addedCategory);
                                 }
                                 else if (txtUpdate == "add new task for existing category")
                                 {
@@ -145,7 +147,7 @@ public class ConsoleUI
                                     var newLabelName = AnsiConsole.Prompt(
                                         new TextPrompt<string>("Enter new task for this category:")
                                     );
-                                    dataManager.AddLabel(new Label(newLabelName), selectedCategory);
+                                    dataModifyer.AddLabel(new Label(newLabelName), selectedCategory);
                                 }
                             }
                         }
@@ -162,7 +164,7 @@ public class ConsoleUI
                             );
 
                             selectedUpdate.Status.Complete = true;
-                            dataManager.SaveAllTasks();
+                            dataModifyer.SaveAllTasks();
                         }
                     }
 
@@ -219,7 +221,7 @@ public class ConsoleUI
                             taskStatus
                         );
 
-                        dataManager.AddNewTaskData(data);
+                        dataModifyer.AddNewTaskData(data);
 
                         command = AskForInput("Enter submit: ");
                     }
@@ -242,7 +244,7 @@ public class ConsoleUI
         else if (user == "new user")
         {
             var newUserName = AnsiConsole.Prompt(new TextPrompt<string>("Enter new user's name:"));
-            dataManager.AddUser(new User(newUserName));
+            dataModifyer.AddUser(new User(newUserName));
         }
     }
 
