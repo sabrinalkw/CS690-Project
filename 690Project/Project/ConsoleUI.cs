@@ -21,10 +21,10 @@ public class ConsoleUI
 
     public void Show()
     {
-        var user = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title("Please select mode new user or current user: ")
-                .AddChoices("new user", "current user")
+        var user = SelectFromStrings(
+            "Please select mode new user or current user:",
+            "new user",
+            "current user"
         );
 
         if (user == "current user")
@@ -37,41 +37,36 @@ public class ConsoleUI
 
                 Console.WriteLine("Current user is: " + selectedUser.Name);
 
-                var selectedStatus = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("Please select upcoming tasks or current tasks:")
-                        .AddChoices("upcoming", "completed")
+                var selectedStatus = SelectFromStrings(
+                    "Please select upcoming tasks or current tasks:",
+                    "upcoming",
+                    "completed"
                 );
 
                 Status taskStatus = new Status(selectedStatus == "completed");
 
                 if (selectedStatus == "completed")
                 {
-                    var viewEdit = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Please select: view tasks or edit tasks:")
-                            .AddChoices("view tasks", "edit tasks")
+                    var viewEdit = SelectFromStrings(
+                        "Please select: view tasks or edit tasks:",
+                        "view tasks",
+                        "edit tasks"
                     );
 
                     if (viewEdit == "edit tasks")
                     {
-                        var updateEdit = AnsiConsole.Prompt(
-                            new SelectionPrompt<string>()
-                                .Title("Mark previously entered task as complete or add new task ")
-                                .AddChoices("update previously entered task", "add new task")
+                        var updateEdit = SelectFromStrings(
+                            "Mark previously entered task as complete or add new task",
+                            "update previously entered task",
+                            "add new task"
                         );
 
                         if (updateEdit == "add new task")
                         {
-                            string listUpdate = AnsiConsole.Prompt(
-                                new SelectionPrompt<string>()
-                                    .Title(
-                                        "Please select: choose from list or add new task category"
-                                    )
-                                    .AddChoices(
-                                        "add new task or category",
-                                        "choose from existing list"
-                                    )
+                            var listUpdate = SelectFromStrings(
+                                "Please select: choose from list or add new task category",
+                                "add new task or category",
+                                "choose from existing list"
                             );
 
                             if (listUpdate == "choose from existing list")
@@ -105,15 +100,10 @@ public class ConsoleUI
                             }
                             else if (listUpdate == "add new task or category")
                             {
-                                var txtUpdate = AnsiConsole.Prompt(
-                                    new SelectionPrompt<string>()
-                                        .Title(
-                                            "Please select: add new category or add new task for existing category"
-                                        )
-                                        .AddChoices(
-                                            "add new category",
-                                            "add new task for existing category"
-                                        )
+                                var txtUpdate = SelectFromStrings(
+                                    "Please select: add new category or add new task for existing category",
+                                    "add new category",
+                                    "add new task for existing category"
                                 );
 
                                 if (txtUpdate == "add new category")
@@ -177,17 +167,17 @@ public class ConsoleUI
                 }
                 else if (selectedStatus == "upcoming")
                 {
-                    var viewEdit = AnsiConsole.Prompt(
-                        new SelectionPrompt<string>()
-                            .Title("Please select: view tasks or edit tasks:")
-                            .AddChoices("view tasks", "edit tasks")
+                    var viewEdit = SelectFromStrings(
+                        "Please select: view tasks or edit tasks:",
+                        "view tasks",
+                        "edit tasks"
                     );
                     if (viewEdit == "edit tasks")
                     {
-                        var updateEdit = AnsiConsole.Prompt(
-                            new SelectionPrompt<string>()
-                                .Title("Mark previously entered task as complete or add new task ")
-                                .AddChoices("update previously entered task", "add new task")
+                        var updateEdit = SelectFromStrings(
+                            "Mark previously entered task as complete or add new task",
+                            "update previously entered task",
+                            "add new task"
                         );
 
                         var selectedCategory = SelectFromList(
@@ -241,7 +231,7 @@ public class ConsoleUI
         }
     }
 
-    public static string AskForInput(string message)
+    public static string AskForInput(string message) // for asking for input (refactoring)
     {
         Console.Write(message);
         return Console.ReadLine() ?? "";
@@ -250,5 +240,10 @@ public class ConsoleUI
     public static T SelectFromList<T>(string title, IEnumerable<T> items) // refactor to pick from list
     {
         return AnsiConsole.Prompt(new SelectionPrompt<T>().Title(title).AddChoices(items));
+    }
+
+    public static string SelectFromStrings(string title, params string[] options) // refactoring but picking from different string options
+    {
+        return AnsiConsole.Prompt(new SelectionPrompt<string>().Title(title).AddChoices(options));
     }
 }
