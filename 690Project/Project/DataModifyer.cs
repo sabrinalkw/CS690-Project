@@ -1,4 +1,5 @@
 namespace Project;
+// class used to modifyfiles from input from ConsoleUi
 public class DataModifyer
 {
     FileSaver fileSaver;

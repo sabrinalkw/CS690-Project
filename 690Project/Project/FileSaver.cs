@@ -1,7 +1,7 @@
 namespace Project;
 
 using System.IO;
-
+// this class is for saving the data to the txt files
 public class FileSaver
 {
     string fileName;

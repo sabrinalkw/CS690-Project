@@ -2,6 +2,8 @@ using Microsoft.VisualBasic;
 
 namespace Project;
 
+//this class holds info on the different domains that are used and guide this project: user, lables, category, task status and date time.
+//it also shows and constructs how the domains relate to eachother. 
 public class User
 {
     public string Name { get; }
