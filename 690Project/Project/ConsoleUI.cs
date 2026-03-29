@@ -21,67 +21,39 @@ public class ConsoleUI
 
     public void Show()
     {
-        var user = ConsoleInputs.SelectFromStrings(
-            "Please select mode new user or current user:",
-            "new user",
-            "current user"
-        );
+        string command = "";
+
+        string user = ModeSelect();
 
         if (user == "current user")
         {
-            string command = "";
-
             do
             {
-                var selectedUser = ConsoleInputs.SelectFromList(
-                    "Please select a user:",
-                    dataManager.Users
-                );
+                User selectedUser = UserSelect();
 
                 Console.WriteLine("Current user is: " + selectedUser.Name);
 
-                var selectedStatus = ConsoleInputs.SelectFromStrings(
-                    "Please select upcoming tasks or current tasks:",
-                    "upcoming",
-                    "completed"
-                );
+                string selectedStatus = SelectCompleteUpcoming();
 
                 Status taskStatus = new Status(selectedStatus == "completed");
 
                 if (selectedStatus == "completed")
                 {
-                    var viewEdit = ConsoleInputs.SelectFromStrings(
-                        "Please select: view tasks or edit tasks:",
-                        "view tasks",
-                        "edit tasks"
-                    );
+                    string viewEdit = SelectViewEdit();
 
                     if (viewEdit == "edit tasks")
                     {
-                        var updateEdit = ConsoleInputs.SelectFromStrings(
-                            "Mark previously entered task as complete or add new task",
-                            "update previously entered task",
-                            "add new task"
-                        );
+                        string updateEdit = NewOrUpdate();
 
                         if (updateEdit == "add new task")
                         {
-                            var listUpdate = ConsoleInputs.SelectFromStrings(
-                                "Please select: choose from list or add new task category",
-                                "add new task or category",
-                                "choose from existing list"
-                            );
+                            string listUpdate = UpdateTaskList();
 
                             if (listUpdate == "choose from existing list")
                             {
-                                var selectedCategory = ConsoleInputs.SelectFromList(
-                                    "Please select task category: ",
-                                    dataManager.Categories
-                                );
-                                var selectedLabel = ConsoleInputs.SelectFromList(
-                                    "Please select task label: ",
-                                    selectedCategory.Labels
-                                );
+                                Category selectedCategory = CategorySelect();
+
+                                Label selectedLabel = LabelSelect(selectedCategory);
 
                                 DateTime dueDate = ConsoleInputs.GetDate();
 
@@ -97,37 +69,25 @@ public class ConsoleUI
 
                                 command = ConsoleInputs.AskForInput("Enter submit: ");
                             }
-                            else if (listUpdate == "add new task or category")
+                            if (listUpdate == "add new task or category")
                             {
-                                var txtUpdate = ConsoleInputs.SelectFromStrings(
-                                    "Please select: add new category or add new task for existing category",
-                                    "add new category",
-                                    "add new task for existing category"
-                                );
+                                string txtUpdate = NewCategoryOrExisting();
 
                                 if (txtUpdate == "add new category")
                                 {
-                                    var newCategoryName = AnsiConsole.Prompt(
-                                        new TextPrompt<string>("Enter new category name:")
-                                    );
-                                    dataModifyer.AddCategory(new Category(newCategoryName));
+                                    string newCategoryName = PromptCategoryName();
 
-                                    var newLabelName = AnsiConsole.Prompt(
-                                        new TextPrompt<string>("Enter new task for this category:")
-                                    );
+                                    dataModifyer.AddCategory(new Category(newCategoryName));
+                                    string newLabelName = NewTaskForCategory();
                                     var addedCategory = dataManager.Categories.Last();
                                     dataModifyer.AddLabel(new Label(newLabelName), addedCategory);
                                 }
-                                else if (txtUpdate == "add new task for existing category")
+                                if (txtUpdate == "add new task for existing category")
                                 {
-                                    var selectedCategory = ConsoleInputs.SelectFromList(
-                                        "Please select task category: ",
-                                        dataManager.Categories
-                                    );
+                                    Category selectedCategory = CategorySelect();
 
-                                    var newLabelName = AnsiConsole.Prompt(
-                                        new TextPrompt<string>("Enter new task for this category:")
-                                    );
+                                    string newLabelName = NewTaskForCategory();
+
                                     dataModifyer.AddLabel(
                                         new Label(newLabelName),
                                         selectedCategory
@@ -135,16 +95,13 @@ public class ConsoleUI
                                 }
                             }
                         }
-                        else if (updateEdit == "update previously entered task")
+                        if (updateEdit == "update previously entered task")
                         {
                             var incompleteTasks = Reporter
                                 .ShowTasksUpcoming(dataManager.TaskData)
                                 .ToList();
 
-                            var selectedUpdate = ConsoleInputs.SelectFromList(
-                                "Please select task to mark as complete ",
-                                incompleteTasks
-                            );
+                            TaskData selectedUpdate = SelectFromList(incompleteTasks);
 
                             selectedUpdate.Status.Complete = true;
                             dataModifyer.SaveAllTasks();
@@ -156,63 +113,192 @@ public class ConsoleUI
                         var result = Reporter.ShowTasksCompleted(dataManager.TaskData);
                         ConsoleInputs.PrintTasks(result, "Your completed tasks are:");
 
-                        command = ConsoleInputs.AskForInput("Enter submit: ");
+                        command = SubmitMethod();
                     }
                 }
-                else if (selectedStatus == "upcoming")
+                if (selectedStatus == "upcoming")
                 {
-                    var viewEdit = ConsoleInputs.SelectFromStrings(
-                        "Please select: view tasks or edit tasks:",
-                        "view tasks",
-                        "edit tasks"
-                    );
+                    string viewEdit = SelectViewEdit();
+
                     if (viewEdit == "edit tasks")
                     {
-                        var updateEdit = ConsoleInputs.SelectFromStrings(
-                            "Mark previously entered task as complete or add new task",
-                            "update previously entered task",
-                            "add new task"
-                        );
+                        string updateEdit = NewOrUpdate();
 
-                        var selectedCategory = ConsoleInputs.SelectFromList(
-                            "Please select task category: ",
-                            dataManager.Categories
-                        );
+                        if (updateEdit == "add new task")
+                        {
+                            string listUpdate = UpdateTaskList();
 
-                        var selectedLabel = ConsoleInputs.SelectFromList(
-                            "Please select task label: ",
-                            selectedCategory.Labels
-                        );
+                            if (listUpdate == "choose from existing list")
+                            {
+                                Category selectedCategory = CategorySelect();
 
-                        DateTime dueDate = ConsoleInputs.GetDate();
+                                Label selectedLabel = LabelSelect(selectedCategory);
 
-                        TaskData data = new TaskData(
-                            dueDate,
-                            selectedUser,
-                            selectedCategory,
-                            selectedLabel,
-                            taskStatus
-                        );
+                                DateTime dueDate = ConsoleInputs.GetDate();
 
-                        dataModifyer.AddNewTaskData(data);
+                                TaskData data = new TaskData(
+                                    dueDate,
+                                    selectedUser,
+                                    selectedCategory,
+                                    selectedLabel,
+                                    taskStatus
+                                );
 
-                        command = ConsoleInputs.AskForInput("Enter submit: ");
+                                dataModifyer.AddNewTaskData(data);
+
+                                command = SubmitMethod();
+                            }
+                            if (listUpdate == "add new task or category")
+                            {
+                                string txtUpdate = NewCategoryOrExisting();
+
+                                if (txtUpdate == "add new category")
+                                {
+                                    string newCategoryName = PromptCategoryName();
+
+                                    dataModifyer.AddCategory(new Category(newCategoryName));
+                                    string newLabelName = NewTaskForCategory();
+                                    var addedCategory = dataManager.Categories.Last();
+                                    dataModifyer.AddLabel(new Label(newLabelName), addedCategory);
+                                }
+                                if (txtUpdate == "add new task for existing category")
+                                {
+                                    Category selectedCategory = CategorySelect();
+
+                                    string newLabelName = NewTaskForCategory();
+
+                                    dataModifyer.AddLabel(
+                                        new Label(newLabelName),
+                                        selectedCategory
+                                    );
+                                }
+                            }
+                        }
                     }
 
                     if (viewEdit == "view tasks")
                     {
                         var result = Reporter.ShowTasksUpcoming(dataManager.TaskData);
                         ConsoleInputs.PrintTasks(result, "Your upcoming tasks are:");
-
-                        command = ConsoleInputs.AskForInput("Enter submit: ");
+                        command = SubmitMethod();
                     }
                 }
             } while (command != "submit");
         }
-        else if (user == "new user")
+
+        if (user == "new user")
         {
-            var newUserName = AnsiConsole.Prompt(new TextPrompt<string>("Enter new user's name:"));
-            dataModifyer.AddUser(new User(newUserName));
+            NewUserSelect();
         }
+    }
+
+    private static string SubmitMethod()
+    {
+        return ConsoleInputs.AskForInput("Enter submit: ");
+    }
+
+    private void NewUserSelect()
+    {
+        var newUserName = AnsiConsole.Prompt(new TextPrompt<string>("Enter new user's name:"));
+        dataModifyer.AddUser(new User(newUserName));
+    }
+
+    private static string NewTaskForCategory()
+    {
+        return AnsiConsole.Prompt(new TextPrompt<string>("Enter new task for this category:"));
+    }
+
+    private static string PromptCategoryName()
+    {
+        return AnsiConsole.Prompt(new TextPrompt<string>("Enter new category name:"));
+    }
+
+    private static string NewCategoryOrExisting()
+    {
+        return ConsoleInputs.SelectFromStrings(
+            "Please select: add new category or add new task for existing category",
+            "add new category",
+            "add new task for existing category"
+        );
+    }
+
+    private static TaskData SelectFromList(List<TaskData> incompleteTasks)
+    {
+        return ConsoleInputs.SelectFromList(
+            "Please select task to mark as complete ",
+            incompleteTasks
+        );
+    }
+
+    private static void NewOrEntered()
+    {
+        var updateEdit = ConsoleInputs.SelectFromStrings(
+            "Mark previously entered task as complete or add new task",
+            "update previously entered task",
+            "add new task"
+        );
+    }
+
+    private static Label LabelSelect(Category selectedCategory)
+    {
+        return ConsoleInputs.SelectFromList("Please select task label: ", selectedCategory.Labels);
+    }
+
+    private static string UpdateTaskList()
+    {
+        return ConsoleInputs.SelectFromStrings(
+            "Please select: choose from list or add new task category",
+            "add new task or category",
+            "choose from existing list"
+        );
+    }
+
+    private static string NewOrUpdate()
+    {
+        return ConsoleInputs.SelectFromStrings(
+            "Mark previously entered task as complete or add new task",
+            "update previously entered task",
+            "add new task"
+        );
+    }
+
+    private static string SelectViewEdit()
+    {
+        return ConsoleInputs.SelectFromStrings(
+            "Please select: view tasks or edit tasks:",
+            "view tasks",
+            "edit tasks"
+        );
+    }
+
+    private static string SelectCompleteUpcoming()
+    {
+        return ConsoleInputs.SelectFromStrings(
+            "Please select upcoming tasks or current tasks:",
+            "upcoming",
+            "completed"
+        );
+    }
+
+    private User UserSelect()
+    {
+        return ConsoleInputs.SelectFromList("Please select a user:", dataManager.Users);
+    }
+
+    private static string ModeSelect()
+    {
+        return ConsoleInputs.SelectFromStrings(
+            "Please select mode new user or current user:",
+            "new user",
+            "current user"
+        );
+    }
+
+    private Category CategorySelect()
+    {
+        return ConsoleInputs.SelectFromList(
+            "Please select task category: ",
+            dataManager.Categories
+        );
     }
 }

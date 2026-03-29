@@ -8,3 +8,5 @@ Ben-Medications-Heartworm Medication-02/02/2002 02:00:00-complete
 sabrina-Vet-Vet appointements-01/01/2001 01:00:00-complete
 Jane-Medications-Heartworm Medication-01/01/2001 02:00:00-complete
 John-Medications-Heartworm Medication-11/11/2011 11:11:00-complete
+Jane-Medications-Heartworm Medication-10/10/2010 10:00:00-incomplete
+Jane-Medications-Heartworm Medication-01/01/2001 01:00:00-complete

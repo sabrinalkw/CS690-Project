@@ -2,7 +2,7 @@ using Spectre.Console;
 
 namespace Project;
 
-class ConsoleInputs
+class ConsoleInputs //THis class has the blueprints for the ConsoleQuesitons Page, where it outlines methods for pikcing something form a list, or from a set for strings or for input
 {
     public static DateTime GetDate()
     {
