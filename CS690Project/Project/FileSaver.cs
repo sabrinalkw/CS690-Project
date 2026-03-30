@@ -1,6 +1,7 @@
 namespace Project;
 
 using System.IO;
+
 // this class is for saving the data to the txt files
 public class FileSaver
 {
@@ -15,12 +16,12 @@ public class FileSaver
         }
     }
 
-    public void AppendLine(string line)
+    public void AppendLine(string line) // see test in FileSaverTests.cs
     {
         File.AppendAllText(this.fileName, line + Environment.NewLine);
     }
 
-    public void AppendData(TaskData data)
+    public void AppendData(TaskData data) // see test in FileSaverTests.cs
     {
         File.AppendAllText(
             this.fileName,
@@ -30,7 +31,7 @@ public class FileSaver
                 + "-"
                 + data.Label
                 + "-"
-                + data.DueDate
+                + data.DueDate.ToString("M/d/yyyy H:mm:ss")
                 + "-"
                 + data.Status
                 + Environment.NewLine

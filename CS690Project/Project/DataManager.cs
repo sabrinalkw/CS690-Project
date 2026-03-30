@@ -1,15 +1,17 @@
 using System.Reflection.Metadata;
 
 namespace Project;
+
 // this class is for reading files and adding to them
-public class DataManager 
+public class DataManager
 {
     FileSaver fileSaver;
     public List<Category> Categories { get; }
     public List<Label> Labels { get; }
     public List<User> Users { get; }
     public List<TaskData> TaskData { get; }
-// reads from files
+
+    // reads from files
     public DataManager() // load
     {
         fileSaver = new FileSaver("task-data.txt");
