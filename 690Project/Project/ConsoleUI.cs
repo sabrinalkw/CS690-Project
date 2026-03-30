@@ -1,24 +1,29 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq.Expressions;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using Microsoft.VisualBasic;
 using Spectre.Console;
 
 namespace Project;
+
 // this class holds the info that guides the UI experince (what choices or informatoin when)
 public class ConsoleUI
 {
     DataManager dataManager;
     DataModifyer dataModifyer;
     ConsoleQuestions consoleQuestions;
+    ConsoleComponets consoleComponets;
 
     public ConsoleUI()
     {
         dataManager = new DataManager();
         dataModifyer = new DataModifyer((dataManager));
         consoleQuestions = new ConsoleQuestions(dataManager, dataModifyer);
+        consoleComponets = new ConsoleComponets(dataManager, dataModifyer, consoleQuestions);
     }
 
     public void Show()
@@ -49,77 +54,22 @@ public class ConsoleUI
 
                         if (updateEdit == "add new task")
                         {
-                            string listUpdate = consoleQuestions.UpdateTaskList();
-
-                            if (listUpdate == "choose from existing list")
-                            {
-                                Category selectedCategory = consoleQuestions.CategorySelect();
-
-                                Label selectedLabel = consoleQuestions.LabelSelect(
-                                    selectedCategory
-                                );
-
-                                DateTime dueDate = ConsoleInputs.GetDate();
-
-                                TaskData data = new TaskData(
-                                    dueDate,
-                                    selectedUser,
-                                    selectedCategory,
-                                    selectedLabel,
-                                    taskStatus
-                                );
-
-                                dataModifyer.AddNewTaskData(data);
-
-                                command = ConsoleInputs.AskForInput("Enter submit: ");
-                            }
-                            if (listUpdate == "add new task or category")
-                            {
-                                string txtUpdate = consoleQuestions.NewCategoryOrExisting();
-
-                                if (txtUpdate == "add new category")
-                                {
-                                    string newCategoryName = consoleQuestions.PromptCategoryName();
-
-                                    dataModifyer.AddCategory(new Category(newCategoryName));
-                                    string newLabelName = consoleQuestions.NewTaskForCategory();
-                                    var addedCategory = dataManager.Categories.Last();
-                                    dataModifyer.AddLabel(new Label(newLabelName), addedCategory);
-                                }
-                                if (txtUpdate == "add new task for existing category")
-                                {
-                                    Category selectedCategory = consoleQuestions.CategorySelect();
-
-                                    string newLabelName = consoleQuestions.NewTaskForCategory();
-
-                                    dataModifyer.AddLabel(
-                                        new Label(newLabelName),
-                                        selectedCategory
-                                    );
-                                }
-                            }
+                            command = consoleComponets.AddOrUpdateTask(
+                       
+                                command,
+                                selectedUser,
+                                taskStatus
+                            );
                         }
                         if (updateEdit == "update previously entered task")
                         {
-                            var incompleteTasks = Reporter
-                                .ShowTasksUpcoming(dataManager.TaskData)
-                                .ToList();
-
-                            TaskData selectedUpdate = consoleQuestions.SelectFromList(
-                                incompleteTasks
-                            );
-
-                            selectedUpdate.Status.Complete = true;
-                            dataModifyer.SaveAllTasks();
+                            consoleComponets.UpdateEnteredTask();
                         }
                     }
 
                     if (viewEdit == "view tasks")
                     {
-                        var result = Reporter.ShowTasksCompleted(dataManager.TaskData);
-                        ConsoleInputs.PrintTasks(result, "Your completed tasks are:");
-
-                        command = consoleQuestions.SubmitMethod();
+                        command = consoleComponets.ShowCompletedTasks();
                     }
                 }
                 if (selectedStatus == "upcoming")
@@ -128,67 +78,12 @@ public class ConsoleUI
 
                     if (viewEdit == "edit tasks")
                     {
-                        string updateEdit = consoleQuestions.NewOrUpdate();
-
-                        if (updateEdit == "add new task")
-                        {
-                            string listUpdate = consoleQuestions.UpdateTaskList();
-
-                            if (listUpdate == "choose from existing list")
-                            {
-                                Category selectedCategory = consoleQuestions.CategorySelect();
-
-                                Label selectedLabel = consoleQuestions.LabelSelect(
-                                    selectedCategory
-                                );
-
-                                DateTime dueDate = ConsoleInputs.GetDate();
-
-                                TaskData data = new TaskData(
-                                    dueDate,
-                                    selectedUser,
-                                    selectedCategory,
-                                    selectedLabel,
-                                    taskStatus
-                                );
-
-                                dataModifyer.AddNewTaskData(data);
-
-                                command = consoleQuestions.SubmitMethod();
-                            }
-                            if (listUpdate == "add new task or category")
-                            {
-                                string txtUpdate = consoleQuestions.NewCategoryOrExisting();
-
-                                if (txtUpdate == "add new category")
-                                {
-                                    string newCategoryName = consoleQuestions.PromptCategoryName();
-
-                                    dataModifyer.AddCategory(new Category(newCategoryName));
-                                    string newLabelName = consoleQuestions.NewTaskForCategory();
-                                    var addedCategory = dataManager.Categories.Last();
-                                    dataModifyer.AddLabel(new Label(newLabelName), addedCategory);
-                                }
-                                if (txtUpdate == "add new task for existing category")
-                                {
-                                    Category selectedCategory = consoleQuestions.CategorySelect();
-
-                                    string newLabelName = consoleQuestions.NewTaskForCategory();
-
-                                    dataModifyer.AddLabel(
-                                        new Label(newLabelName),
-                                        selectedCategory
-                                    );
-                                }
-                            }
-                        }
+                        command = consoleComponets.AddOrUpdateTask(command, selectedUser, taskStatus);
                     }
 
                     if (viewEdit == "view tasks")
                     {
-                        var result = Reporter.ShowTasksUpcoming(dataManager.TaskData);
-                        ConsoleInputs.PrintTasks(result, "Your upcoming tasks are:");
-                        command = consoleQuestions.SubmitMethod();
+                        command = consoleComponets.ShowUpcomingTasks();
                     }
                 }
             } while (command != "submit");

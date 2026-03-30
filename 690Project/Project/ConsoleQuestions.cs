@@ -3,15 +3,16 @@ using Spectre.Console;
 namespace Project;
 
 // This class holds the string inputs based on the emplatesd from ConsoleInputs page for refactoring and to take editing the string inputs out of the ConsoleUI
-class ConsoleQuestions
+public class ConsoleQuestions
 {
     DataManager dataManager;
+
     DataModifyer dataModifyer;
 
     public ConsoleQuestions(DataManager dataManager, DataModifyer dataModifyer)
     {
-        dataManager = new DataManager();
-        dataModifyer = new DataModifyer(dataManager);
+        this.dataManager = dataManager;
+        this.dataModifyer = dataModifyer;
     }
 
     public string SubmitMethod()
