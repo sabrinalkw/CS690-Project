@@ -55,7 +55,6 @@ public class ConsoleUI
                         if (updateEdit == "add new task")
                         {
                             command = consoleComponets.AddOrUpdateTask(
-                       
                                 command,
                                 selectedUser,
                                 taskStatus
@@ -78,7 +77,11 @@ public class ConsoleUI
 
                     if (viewEdit == "edit tasks")
                     {
-                        command = consoleComponets.AddOrUpdateTask(command, selectedUser, taskStatus);
+                        command = consoleComponets.AddOrUpdateTask(
+                            command,
+                            selectedUser,
+                            taskStatus
+                        );
                     }
 
                     if (viewEdit == "view tasks")
