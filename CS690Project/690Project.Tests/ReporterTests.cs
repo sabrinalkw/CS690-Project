@@ -12,7 +12,7 @@ public class ReporterTests
     }
     
     [Fact]
-    public void Test_ShowTasksUpcoming()
+    public void Test_ShowTasksUpcoming() // Test to test if showing upcoming tasks is filtering out completed tasks and sortin gby date
     {
        User sampleUser1 = new User("SampleUser1");
         Category sampleCategory1 = new Category("SampleCategory1");
