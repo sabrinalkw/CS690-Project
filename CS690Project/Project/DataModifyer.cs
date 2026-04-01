@@ -1,15 +1,19 @@
 namespace Project;
+
 // class used to modifyfiles from input from ConsoleUi
 public class DataModifyer
 {
     FileSaver fileSaver;
     DataManager dataManager;
+    DataModifyer dataModifyer;
 
     public DataModifyer(DataManager dataManager)
     {
         this.dataManager = dataManager;
         this.fileSaver = new FileSaver("task-data.txt");
     }
+
+    public List<User> Users => dataManager.Users;
 
     public void SaveAllTasks()
     {
@@ -36,7 +40,7 @@ public class DataModifyer
         }
     }
 
-    public void AddUser(User user)
+    public void AddUser(User user) // Tested in DataModifyerTests.cs
     {
         dataManager.Users.Add(user);
         SynchronizeUsers();

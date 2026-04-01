@@ -5,26 +5,21 @@ using Project;
 
 public class FileSaverTests
 {
-    FileSaver fileSaverOne;
-    FileSaver fileSaverTwo;
-    string testFileOne;
-
-    string testFileTwo;
+    FileSaver fileSaver;
+    string testFileName;
 
     public FileSaverTests()
     {
-        testFileOne = "test-doc-one.txt";
-        testFileTwo = "test-doc-two.txt";
-
-        fileSaverOne = new FileSaver(testFileOne);
-        fileSaverTwo = new FileSaver(testFileTwo);
+        testFileName = "test-doc.txt";
+        File.Delete(testFileName);
+        fileSaver = new FileSaver(testFileName);
     }
 
     [Fact]
     public void Test_FileSave_Append() // testing to make sure that test is being appended to file, and then a new line made
     {
-        fileSaverOne.AppendLine("Hello test user");
-        var contentFromFile = File.ReadAllText(testFileOne);
+        fileSaver.AppendLine("Hello test user");
+        var contentFromFile = File.ReadAllText(testFileName);
         Assert.Equal("Hello test user" + Environment.NewLine, contentFromFile);
     }
 
@@ -43,8 +38,8 @@ public class FileSaverTests
             sampleStatus
         );
 
-        fileSaverTwo.AppendData(sampleData);
-        var contentFromFile = File.ReadAllText(testFileTwo);
+        fileSaver.AppendData(sampleData);
+        var contentFromFile = File.ReadAllText(testFileName);
         Assert.Equal(
             "SampleUser-SampleCategory-SampleLabel-1/1/2001 1:00:00-complete" + Environment.NewLine,
             contentFromFile
