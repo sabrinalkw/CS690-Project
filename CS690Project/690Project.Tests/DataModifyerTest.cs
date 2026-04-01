@@ -28,7 +28,7 @@ public class DataModifyerTests
     }
 
     [Fact]
-    public void Test_AddUser()
+    public void Test_AddUser() //testing the functions to add a user to the system 
     {
         Assert.Equal(4, dataModifyer.Users.Count);
         dataModifyer.AddUser(new User("TestUser5"));

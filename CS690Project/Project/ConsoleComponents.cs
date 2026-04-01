@@ -5,7 +5,6 @@ namespace Project;
 // this class has peices from the ConsoleQuestions.cs, that are put together to create combo code pieces for ConsoleQuestions, as for parts of Console UI there is repeating code
 public class ConsoleComponets
 {
-
     DataManager dataManager;
     DataModifyer dataModifyer;
     ConsoleQuestions consoleQuestions;
